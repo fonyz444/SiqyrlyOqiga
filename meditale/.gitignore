@@ -19,10 +19,13 @@
 
 # production
 /build
+/dist
 
 # misc
 .DS_Store
 *.pem
+Thumbs.db
+desktop.ini
 
 # debug
 npm-debug.log*
@@ -30,9 +33,14 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# env files — NEVER commit secrets
+.env
+.env.*
 .env.local
+.env.development
+.env.production
+.env.staging
+.env.test
 
 # vercel
 .vercel
@@ -41,4 +49,30 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-MediTale_MVP_Plan (1).md
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Supabase local
+supabase/.temp/
+
+# API keys / credentials
+*.key
+*.pem
+*.p12
+*.pfx
+credentials.json
+service-account.json
+
+# Plan docs (not for public repo)
+MediTale_MVP_Plan*.md
+GEMINI.md
