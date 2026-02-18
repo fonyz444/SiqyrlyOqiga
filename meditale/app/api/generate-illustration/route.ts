@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { openrouter, MODELS } from '@/lib/openrouter'
+import { getOpenRouterClient, MODELS } from '@/lib/openrouter'
 
 export async function POST(request: NextRequest) {
     try {
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Generate illustration
-        const response = await openrouter.images.generate({
+        const response = await getOpenRouterClient().images.generate({
             model: MODELS.illustration,
             prompt: prompt,
             n: 1,

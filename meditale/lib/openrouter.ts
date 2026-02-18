@@ -18,13 +18,6 @@ export function getOpenRouterClient(): OpenAI {
     return _client
 }
 
-// Backward-compatible export (use getOpenRouterClient() in new code)
-export const openrouter = new Proxy({} as OpenAI, {
-    get(_, prop) {
-        return (getOpenRouterClient() as any)[prop]
-    }
-})
-
 // Models available for generation
 export const MODELS = {
     story: 'openai/gpt-4o-mini',

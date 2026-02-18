@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { openrouter, MODELS } from '@/lib/openrouter'
+import { getOpenRouterClient, MODELS } from '@/lib/openrouter'
 import { buildMessages } from '@/lib/prompts'
 import { FormData } from '@/lib/types'
 
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
 
         let completion
         try {
-            completion = await openrouter.chat.completions.create({
+            completion = await getOpenRouterClient().chat.completions.create({
                 model: MODELS.story,
                 messages: messages as any,
                 max_tokens: 2500,
@@ -145,7 +145,7 @@ async function generateIllustrations(
             try {
                 console.log(`Generating illustration ${i + 1}/${chapters.length}...`)
 
-                const response = await openrouter.chat.completions.create({
+                const response = await getOpenRouterClient().chat.completions.create({
                     model: MODELS.illustration,
                     messages: [
                         {
