@@ -66,7 +66,7 @@ export default function Home() {
             display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px",
           }}>📖</div>
           <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "20px", color: "var(--brown)" }}>
-            MediTale
+            Siqyrly Oqiga
           </span>
         </div>
 
@@ -299,7 +299,7 @@ export default function Home() {
                 <br />вашему малышу?
               </h2>
               <p style={{ fontSize: "17px", lineHeight: 1.8, color: "var(--text-muted)", marginBottom: "16px" }}>
-                MediTale создаёт персональную сказку про вашего ребёнка — с его именем, любимыми персонажами и настоящим приключением!
+                Siqyrly Oqiga создаёт персональную сказку про вашего ребёнка — с его именем, любимыми персонажами и настоящим приключением!
               </p>
               <p style={{ fontSize: "17px", lineHeight: 1.8, color: "var(--text-muted)" }}>
                 В сказке герой встречает добрых врачей, побеждает страх и становится самым храбрым на свете. Ребёнок не боится — он ждёт!
@@ -446,7 +446,7 @@ export default function Home() {
             maxWidth: "520px",
             margin: "0 auto 40px",
           }}>
-            MediTale создаёт персональную сказку, в которой ваш ребёнок побеждает страх и становится самым храбрым на свете!
+            Siqyrly Oqiga создаёт персональную сказку, в которой ваш ребёнок побеждает страх и становится самым храбрым на свете!
           </p>
           <Link href={isLoggedIn ? "/create" : "/auth"} className="btn-coral" style={{ fontSize: "17px", padding: "18px 44px" }}>
             {isLoggedIn ? "Создать новую сказку" : "Начать бесплатно"}
@@ -472,11 +472,11 @@ export default function Home() {
             display: "flex", alignItems: "center", justifyContent: "center", fontSize: "16px",
           }}>📖</div>
           <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "18px", color: "var(--white)" }}>
-            MediTale
+            Siqyrly Oqiga
           </span>
         </div>
         <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px" }}>
-          MediTale — Healing stories for children
+          Siqyrly Oqiga — Healing stories for children
         </p>
         <div style={{ display: "flex", gap: "24px" }}>
           {["Конфиденциальность", "Условия"].map(link => (

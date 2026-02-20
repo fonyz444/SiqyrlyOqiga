@@ -83,7 +83,7 @@ export async function exportStoryAsPdf(story: Story): Promise<void> {
     pdf.setFont('Roboto', 'normal')
     pdf.setFontSize(14)
     pdf.setTextColor(255, 255, 255)
-    pdf.text('MediTale', pageW / 2, pageH * 0.22, { align: 'center' })
+    pdf.text('Siqyrly Oqiga', pageW / 2, pageH * 0.22, { align: 'center' })
 
     // Title
     pdf.setFontSize(32)

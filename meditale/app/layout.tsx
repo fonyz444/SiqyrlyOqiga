@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 const nunito = Nunito({ subsets: ["latin", "cyrillic"], weight: ["400", "500", "600", "700", "800"] });
 
 export const metadata: Metadata = {
-  title: "MediTale — Healing Stories for Children",
+  title: "Siqyrly Oqiga — Healing Stories for Children",
   description: "AI-powered personalized therapeutic stories that help children understand and cope with medical treatments through magical adventures.",
 };
 

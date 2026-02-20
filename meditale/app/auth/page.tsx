@@ -82,7 +82,7 @@ export default function AuthPage() {
                         <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/30 backdrop-blur-sm mb-4 shadow-lg">
                             <BookOpen className="h-8 w-8 text-white" />
                         </div>
-                        <h1 className="text-3xl font-extrabold text-gradient-magic">MediTale</h1>
+                        <h1 className="text-3xl font-extrabold text-gradient-magic">Siqyrly Oqiga</h1>
                         <p className="text-sm text-gray-600 mt-1">Create healing stories for your child</p>
                     </div>
 

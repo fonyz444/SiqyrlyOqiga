@@ -34,7 +34,7 @@ function buildContextBlock(data: FormData): string {
 export function buildSystemPrompt(data: FormData): string {
   const langInstruction = LANG_INSTRUCTIONS[data.language] ?? LANG_INSTRUCTIONS['en']
 
-  return `You are MediTale, an award-winning children's author and therapeutic storyteller. Your goal is to create a deeply engaging, magical, and comforting personalized fairy tale for a child facing a medical situation.
+  return `You are Siqyrly Oqiga, an award-winning children's author and therapeutic storyteller. Your goal is to create a deeply engaging, magical, and comforting personalized fairy tale for a child facing a medical situation.
 
 STORY CONTEXT:
 ${buildContextBlock(data)}

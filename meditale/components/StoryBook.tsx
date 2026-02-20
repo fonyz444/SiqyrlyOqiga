@@ -136,7 +136,7 @@ export function StoryBook({ story: initialStory }: StoryBookProps) {
                         <div className="relative z-10">
                             <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-1.5 text-white/90 text-sm font-medium mb-6">
                                 <BookOpen className="h-4 w-4" />
-                                MediTale
+                                Siqyrly Oqiga
                             </div>
                             <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-4 drop-shadow-lg leading-tight">
                                 {story.title}

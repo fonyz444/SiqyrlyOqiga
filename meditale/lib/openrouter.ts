@@ -11,7 +11,7 @@ export function getOpenRouterClient(): OpenAI {
             baseURL: 'https://openrouter.ai/api/v1',
             defaultHeaders: {
                 'HTTP-Referer': 'https://meditale.vercel.app',
-                'X-Title': 'MediTale',
+                'X-Title': 'Siqyrly Oqiga',
             }
         })
     }
