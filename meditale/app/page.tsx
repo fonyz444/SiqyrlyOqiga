@@ -1,242 +1,493 @@
-import Link from "next/link";
+'use client'
+
+import Link from "next/link"
+import { useEffect, useState } from "react"
+import { createClient } from "@/lib/supabase/client"
+import { ArrowRight, ArrowDown, BookOpen, Sparkles, Heart, Zap, Download } from "lucide-react"
 
 export default function Home() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [userName, setUserName] = useState("")
+
+  useEffect(() => {
+    async function load() {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        setIsLoggedIn(true)
+        setUserName(user.user_metadata?.full_name?.split(" ")[0] || user.email?.split("@")[0] || "there")
+      }
+    }
+    load()
+  }, [])
+
+  // ── Scroll-reveal via IntersectionObserver ──────────────────
+  useEffect(() => {
+    const selectors = ".reveal, .reveal-left, .reveal-right, .reveal-scale"
+    const targets = document.querySelectorAll<HTMLElement>(selectors)
+
+    if (!targets.length) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible")
+            observer.unobserve(entry.target) // fire once per element
+          }
+        })
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+    )
+
+    targets.forEach((el) => observer.observe(el))
+    return () => observer.disconnect()
+  }, [])
+
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#fff", display: "flex", flexDirection: "column", fontFamily: "var(--font-sans, system-ui, -apple-system, sans-serif)" }}>
-      {/* ── Top Navigation ── */}
-      <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 40px" }}>
+    <div style={{ fontFamily: "var(--font-body)", backgroundColor: "var(--cream)", overflowX: "hidden" }}>
+      {/* ─────── HEADER ─────── */}
+      <header style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "20px 48px",
+        backgroundColor: "var(--cream)",
+        position: "sticky",
+        top: 0,
+        zIndex: 50,
+        borderBottom: "1px solid rgba(59,34,18,0.08)",
+      }}>
         {/* Logo */}
-        <div style={{ display: "flex", alignItems: "center", gap: "3px" }}>
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-            <circle cx="8" cy="8" r="4" fill="#1a1a1a" />
-            <circle cx="20" cy="8" r="4" fill="#1a1a1a" />
-            <circle cx="8" cy="20" r="4" fill="#1a1a1a" />
-            <circle cx="20" cy="20" r="4" fill="#1a1a1a" />
-          </svg>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <div style={{
+            width: "36px", height: "36px", borderRadius: "10px",
+            background: "linear-gradient(135deg, var(--coral), var(--yellow))",
+            display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px",
+          }}>📖</div>
+          <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "20px", color: "var(--brown)" }}>
+            MediTale
+          </span>
         </div>
 
-        {/* Nav links */}
-        <nav style={{ display: "flex", alignItems: "center", gap: "2px", backgroundColor: "#f3f4f6", borderRadius: "9999px", padding: "4px 6px" }}>
-          {["Overview", "How it works", "Privacy and terms", "FAQ"].map((item) => (
-            <Link
-              key={item}
-              href="#"
-              style={{ padding: "6px 16px", fontSize: "13px", fontWeight: 500, color: "#4b5563", borderRadius: "9999px", textDecoration: "none", transition: "all 0.15s" }}
-            >
+        {/* Nav */}
+        <nav style={{ display: "flex", gap: "32px", alignItems: "center" }}>
+          {["О нас", "Как это работает", "Примеры"].map(item => (
+            <a key={item} href="#" style={{ color: "var(--text-muted)", fontSize: "14px", fontWeight: 500, textDecoration: "none" }}>
               {item}
-            </Link>
+            </a>
           ))}
         </nav>
 
-        {/* Spacer */}
-        <div style={{ width: "28px" }} />
+        {/* CTA */}
+        <Link
+          href={isLoggedIn ? "/create" : "/auth"}
+          className="btn-dark"
+        >
+          {isLoggedIn ? `Привет, ${userName}! 👋` : "Попробовать бесплатно"}
+          <ArrowRight size={16} />
+        </Link>
       </header>
 
-      {/* ── Main Content ── */}
-      <main style={{ flex: 1, display: "flex", alignItems: "center", padding: "0 40px 40px", gap: "80px", maxWidth: "1200px", margin: "0 auto", width: "100%" }}>
-        {/* Left side — Text + Auth */}
-        <div style={{ flex: "0 0 420px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-          <h1 style={{ fontSize: "38px", fontWeight: 700, color: "#1a1a1a", lineHeight: 1.15, letterSpacing: "-0.02em", margin: 0 }}>
-            Welcome to MediTale
+      {/* ─────── HERO ─────── */}
+      <section style={{
+        maxWidth: "1200px",
+        margin: "0 auto",
+        padding: "80px 48px 100px",
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr",
+        gap: "64px",
+        alignItems: "center",
+      }}>
+        {/* Left: Text */}
+        <div className="animate-fade-up">
+          <div className="sticker" style={{ marginBottom: "24px" }}>
+            ✨ Для детей от 3 до 12 лет
+          </div>
+
+          <h1 style={{
+            fontFamily: "var(--font-display)",
+            fontSize: "clamp(52px, 6vw, 80px)",
+            fontWeight: 900,
+            lineHeight: 1.05,
+            color: "var(--brown)",
+            marginBottom: "32px",
+          }}>
+            Сказка —{" "}
+            <span style={{ color: "var(--coral)" }}>
+              лучший
+              <br />доктор
+            </span>{" "}
+            для<br />малыша
           </h1>
-          <p style={{ fontSize: "30px", fontWeight: 300, color: "#9ca3af", lineHeight: 1.2, margin: "4px 0 0 0" }}>
-            Your AI storyteller for kids
+
+          <p style={{
+            fontSize: "18px",
+            lineHeight: 1.7,
+            color: "var(--text-muted)",
+            marginBottom: "40px",
+            maxWidth: "440px",
+          }}>
+            Когда ребёнку нужно идти к врачу, он боится. Мы создаём волшебные сказки, которые объясняют всё по-детски — просто и весело!
           </p>
 
-          <div style={{ marginTop: "40px", maxWidth: "380px" }}>
-            {/* Google button */}
-            <Link
-              href="/auth"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "10px",
-                width: "100%",
-                padding: "12px 24px",
-                border: "1px solid #d1d5db",
-                borderRadius: "9999px",
-                fontSize: "14px",
-                fontWeight: 500,
-                color: "#374151",
-                textDecoration: "none",
-                backgroundColor: "#fff",
-                boxSizing: "border-box",
-              }}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24">
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18A11.96 11.96 0 0 0 0 12c0 1.94.46 3.77 1.28 5.39l3.56-2.77.01-.53z" fill="#FBBC05" />
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-              </svg>
-              Continue with Google
+          <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+            <Link href={isLoggedIn ? "/create" : "/auth"} className="btn-dark">
+              Создать сказку <ArrowRight size={16} />
             </Link>
-
-            {/* Divider */}
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", margin: "20px 0" }}>
-              <div style={{ flex: 1, height: "1px", backgroundColor: "#e5e7eb" }} />
-              <span style={{ fontSize: "12px", color: "#9ca3af" }}>or</span>
-              <div style={{ flex: 1, height: "1px", backgroundColor: "#e5e7eb" }} />
-            </div>
-
-            {/* Email input */}
-            <input
-              type="email"
-              placeholder="yourname@email.com"
-              style={{
-                width: "100%",
-                padding: "12px 20px",
-                border: "1px solid #d1d5db",
-                borderRadius: "9999px",
-                fontSize: "14px",
-                color: "#374151",
-                outline: "none",
-                boxSizing: "border-box",
-                backgroundColor: "#fff",
+            <a
+              href="#how"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('how')?.scrollIntoView({ behavior: 'smooth' });
               }}
-            />
-
-            {/* Continue button */}
-            <Link
-              href="/auth"
               style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "100%",
-                padding: "12px 24px",
-                backgroundColor: "#1a1a1a",
-                color: "#fff",
-                borderRadius: "9999px",
-                fontSize: "14px",
-                fontWeight: 600,
-                textDecoration: "none",
-                marginTop: "12px",
-                boxSizing: "border-box",
-              }}
-            >
-              Continue with email
-            </Link>
+                display: "flex", alignItems: "center", gap: "12px",
+                color: "var(--brown)", fontSize: "15px", fontWeight: 600, textDecoration: "none"
+              }}>
+              <div style={{
+                width: "44px", height: "44px", borderRadius: "50%",
+                border: "1px solid rgba(59,34,18,0.8)",
+                display: "flex", alignItems: "center", justifyContent: "center"
+              }}>
+                <ArrowDown size={18} strokeWidth={1.5} color="rgba(59,34,18,0.8)" />
+              </div>
+              Узнать больше
+            </a>
+          </div>
+        </div>
 
-            {/* Terms */}
-            <p style={{ fontSize: "12px", color: "#9ca3af", lineHeight: 1.6, marginTop: "16px" }}>
-              By signing up, you agree to the{" "}
-              <Link href="#" style={{ color: "#9ca3af", textDecoration: "underline" }}>Terms of Use</Link>,{" "}
-              <Link href="#" style={{ color: "#9ca3af", textDecoration: "underline" }}>Privacy Notice</Link>,
-              and <Link href="#" style={{ color: "#9ca3af", textDecoration: "underline" }}>Cookie Notice</Link>.
+        {/* Right: Illustration */}
+        <div className="animate-fade-up delay-200" style={{ position: "relative", height: "480px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <img
+            src="/hero.png"
+            alt="Magical fairy tale illustration"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              borderRadius: "32px",
+              boxShadow: "0 24px 64px rgba(59,34,18,0.15)",
+            }}
+            className="animate-float"
+          />
+
+          {/* Float stickers */}
+          <div style={{
+            position: "absolute", top: "-15px", right: "20px",
+            background: "var(--lime)", color: "var(--brown)",
+            borderRadius: "12px", padding: "10px 18px",
+            fontWeight: 700, fontSize: "14px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+          }} className="animate-fade-up delay-400 animate-float-slow">
+            😊 Больше не страшно!
+          </div>
+
+          <div style={{
+            position: "absolute", bottom: "-20px", left: "20px",
+            background: "var(--white)", borderRadius: "12px",
+            padding: "12px 18px", fontSize: "14px", fontWeight: 700,
+            color: "var(--brown)", boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+            display: "flex", alignItems: "center", gap: "8px",
+          }} className="animate-fade-up delay-500 animate-float">
+            <Heart size={16} fill="var(--coral)" stroke="var(--coral)" /> Ребёнок счастлив
+          </div>
+        </div>
+      </section>
+
+      {/* ─────── БОЛИ (Pain Points) ─────── */}
+      <section id="how" style={{ backgroundColor: "var(--cream-dark)", padding: "100px 48px" }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+          <div className="reveal" style={{ textAlign: "center", marginBottom: "64px" }}>
+            <div className="sticker" style={{ marginBottom: "20px" }}>😰 Знакомо?</div>
+            <h2 style={{
+              fontFamily: "var(--font-display)",
+              fontSize: "clamp(36px, 5vw, 56px)",
+              fontWeight: 900,
+              color: "var(--brown)",
+              lineHeight: 1.1,
+              marginBottom: "16px",
+            }}>
+              Поход к врачу —<br />
+              <span style={{ color: "var(--coral)" }}>это всегда слёзы?</span>
+            </h2>
+            <p style={{ fontSize: "18px", color: "var(--text-muted)", maxWidth: "500px", margin: "0 auto" }}>
+              Вы не одни. Большинство родителей сталкиваются с этими проблемами каждый день.
             </p>
           </div>
-        </div>
 
-        {/* Right side — Product Mockup */}
-        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div style={{ width: "100%", maxWidth: "640px" }}>
-            {/* Laptop body */}
-            <div style={{
-              backgroundColor: "#1a1a1a",
-              borderRadius: "16px",
-              padding: "12px 12px 0",
-              boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)",
-            }}>
-              {/* Camera */}
-              <div style={{ display: "flex", justifyContent: "center", marginBottom: "8px" }}>
-                <div style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#333" }} />
-              </div>
-              {/* Screen */}
-              <div style={{
-                backgroundColor: "#111",
-                borderRadius: "8px 8px 0 0",
-                padding: "24px",
-                minHeight: "360px",
-              }}>
-                {/* App header row */}
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "24px" }}>
-                  <div style={{ display: "flex", gap: "2px" }}>
-                    <div style={{ width: "4px", height: "4px", borderRadius: "50%", backgroundColor: "#666" }} />
-                    <div style={{ width: "4px", height: "4px", borderRadius: "50%", backgroundColor: "#666" }} />
-                    <div style={{ width: "4px", height: "4px", borderRadius: "50%", backgroundColor: "#666" }} />
-                    <div style={{ width: "4px", height: "4px", borderRadius: "50%", backgroundColor: "#666" }} />
-                  </div>
-                  <span style={{ color: "#555", fontSize: "11px", fontWeight: 500 }}>MediTale</span>
-                </div>
-
-                {/* Greeting */}
-                <div style={{ marginBottom: "24px", marginLeft: "8px" }}>
-                  <p style={{ color: "#888", fontSize: "12px", margin: "0 0 2px" }}>Hello, Alikhan</p>
-                  <p style={{ color: "#a78bfa", fontSize: "15px", fontWeight: 500, margin: 0 }}>How can I help you today?</p>
-                </div>
-
-                {/* Cards grid */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px" }}>
-                  {/* Card 1 */}
+          <div className="reveal-stagger" style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: "24px",
+          }}>
+            {[
+              {
+                emoji: "😭",
+                bg: "#fff1f0",
+                title: "«Не пойду к врачу!»",
+                desc: "Ребёнок кричит, плачет и прячется под кровать при одном упоминании больницы.",
+              },
+              {
+                emoji: "❓",
+                bg: "#fff8e1",
+                title: "Не понимает зачем",
+                desc: "Слова «укол», «анализ», «процедура» — звучат страшно. Малыш не понимает что происходит.",
+              },
+              {
+                emoji: "😴",
+                bg: "#f0fff4",
+                title: "Стресс и плохой сон",
+                desc: "Ожидание записи к врачу превращается в дни тревоги, плохого аппетита и кошмаров.",
+              },
+            ].map((item, i) => (
+              <div key={i} className="reveal" style={{ transitionDelay: `${i * 0.1}s` }}>
+                <div style={{
+                  background: "var(--white)",
+                  borderRadius: "24px",
+                  padding: "32px",
+                  height: "100%",
+                  boxShadow: "0 4px 24px rgba(59,34,18,0.07)",
+                }}>
                   <div style={{
-                    backgroundColor: "#2d1f3d",
-                    borderRadius: "12px",
-                    padding: "16px",
-                    border: "1px solid rgba(139,92,246,0.2)",
+                    width: "64px", height: "64px",
+                    borderRadius: "18px",
+                    backgroundColor: item.bg,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: "32px",
+                    marginBottom: "20px",
                   }}>
-                    <div style={{ fontSize: "20px", marginBottom: "8px" }}>🦁</div>
-                    <p style={{ color: "#e0e0e0", fontSize: "11px", fontWeight: 600, margin: "0 0 4px", lineHeight: 1.3 }}>Brave Lion&apos;s Adventure</p>
-                    <p style={{ color: "#a78bfa", fontSize: "10px", margin: 0 }}>3 chapters</p>
+                    {item.emoji}
                   </div>
-
-                  {/* Card 2 */}
-                  <div style={{
-                    backgroundColor: "#2d2517",
-                    borderRadius: "12px",
-                    padding: "16px",
-                    border: "1px solid rgba(245,158,11,0.2)",
-                  }}>
-                    <div style={{ fontSize: "20px", marginBottom: "8px" }}>🐉</div>
-                    <p style={{ color: "#e0e0e0", fontSize: "11px", fontWeight: 600, margin: "0 0 4px", lineHeight: 1.3 }}>Magic Dragon&apos;s Quest</p>
-                    <p style={{ color: "#fbbf24", fontSize: "10px", margin: 0 }}>5 chapters</p>
-                  </div>
-
-                  {/* Card 3 */}
-                  <div style={{
-                    backgroundColor: "#1a2e1a",
-                    borderRadius: "12px",
-                    padding: "16px",
-                    border: "1px solid rgba(34,197,94,0.2)",
-                  }}>
-                    <div style={{ fontSize: "20px", marginBottom: "8px" }}>🧙</div>
-                    <p style={{ color: "#e0e0e0", fontSize: "11px", fontWeight: 600, margin: "0 0 4px", lineHeight: 1.3 }}>Wizard&apos;s Spell</p>
-                    <p style={{ color: "#4ade80", fontSize: "10px", margin: 0 }}>4 chapters</p>
-                  </div>
-
-                  {/* Stats row */}
-                  <div style={{
-                    gridColumn: "1 / -1",
-                    backgroundColor: "#1e1e1e",
-                    borderRadius: "12px",
-                    padding: "16px",
-                    border: "1px solid rgba(255,255,255,0.06)",
-                    display: "flex",
-                    gap: "32px",
-                  }}>
-                    <div>
-                      <p style={{ color: "#666", fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 4px" }}>Stories</p>
-                      <p style={{ color: "#fff", fontSize: "18px", fontWeight: 700, margin: 0 }}>12</p>
-                    </div>
-                    <div>
-                      <p style={{ color: "#666", fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 4px" }}>Languages</p>
-                      <p style={{ color: "#fff", fontSize: "16px", margin: 0 }}>🇰🇿 🇷🇺 🇬🇧</p>
-                    </div>
-                    <div>
-                      <p style={{ color: "#666", fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 4px" }}>Exported</p>
-                      <p style={{ color: "#fff", fontSize: "18px", fontWeight: 700, margin: 0 }}>8</p>
-                    </div>
-                  </div>
+                  <h3 style={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: "22px",
+                    fontWeight: 700,
+                    color: "var(--brown)",
+                    marginBottom: "12px",
+                  }}>{item.title}</h3>
+                  <p style={{ fontSize: "15px", lineHeight: 1.7, color: "var(--text-muted)" }}>{item.desc}</p>
                 </div>
               </div>
-            </div>
-            {/* Laptop base */}
-            <div style={{ height: "12px", backgroundColor: "#2a2a2a", borderRadius: "0 0 8px 8px", margin: "0 48px" }} />
-            <div style={{ height: "4px", backgroundColor: "#3a3a3a", borderRadius: "0 0 4px 4px", margin: "0 96px" }} />
+            ))}
           </div>
         </div>
-      </main>
+      </section>
+
+      {/* ─────── ПРО ПРОДУКТ (About Product) ─────── */}
+      <section style={{ padding: "100px 48px", backgroundColor: "var(--cream)" }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+          {/* Top intro */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "64px",
+            alignItems: "center",
+            marginBottom: "80px",
+          }}>
+            <div className="reveal-left">
+              <div className="sticker" style={{ marginBottom: "24px" }}>🌟 Наше решение</div>
+              <h2 style={{
+                fontFamily: "var(--font-display)",
+                fontSize: "clamp(36px, 5vw, 54px)",
+                fontWeight: 900,
+                color: "var(--brown)",
+                lineHeight: 1.1,
+                marginBottom: "24px",
+              }}>
+                Как мы{" "}
+                <span className="squiggle" style={{ color: "var(--coral)" }}>помогаем</span>
+                <br />вашему малышу?
+              </h2>
+              <p style={{ fontSize: "17px", lineHeight: 1.8, color: "var(--text-muted)", marginBottom: "16px" }}>
+                MediTale создаёт персональную сказку про вашего ребёнка — с его именем, любимыми персонажами и настоящим приключением!
+              </p>
+              <p style={{ fontSize: "17px", lineHeight: 1.8, color: "var(--text-muted)" }}>
+                В сказке герой встречает добрых врачей, побеждает страх и становится самым храбрым на свете. Ребёнок не боится — он ждёт!
+              </p>
+            </div>
+
+            {/* Feature card */}
+            <div className="reveal-right" style={{
+              background: "var(--forest)",
+              borderRadius: "32px",
+              padding: "48px",
+              color: "var(--white)",
+              position: "relative",
+              overflow: "hidden",
+            }}>
+              <div style={{
+                position: "absolute", top: "-30px", right: "-30px",
+                width: "150px", height: "150px",
+                borderRadius: "50%",
+                backgroundColor: "rgba(168, 216, 74, 0.2)",
+              }} />
+              <div style={{ fontSize: "48px", marginBottom: "24px" }}>📚</div>
+              <h3 style={{
+                fontFamily: "var(--font-display)",
+                fontSize: "28px",
+                fontWeight: 700,
+                marginBottom: "16px",
+                lineHeight: 1.2,
+              }}>
+                Сказка готова<br />за 30 секунд
+              </h3>
+              <p style={{ fontSize: "15px", lineHeight: 1.7, opacity: 0.85, marginBottom: "24px" }}>
+                Вы рассказываете нам о ребёнке, а умный ИИ создаёт уникальную историю. Просто и быстро!
+              </p>
+              <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+                {["С картинками", "На 3 языках", "Скачать PDF"].map(tag => (
+                  <span key={tag} style={{
+                    background: "rgba(255,255,255,0.15)",
+                    borderRadius: "8px",
+                    padding: "6px 14px",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                  }}>{tag}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* 4 feature boxes */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "20px" }}>
+            {[
+              { emoji: "🎭", title: "Персональный герой", desc: "Ребёнок сам становится главным героем сказки", color: "#fde68a" },
+              { emoji: "🎨", title: "Красивые картинки", desc: "ИИ рисует иллюстрации специально для вашей истории", color: "#bbf7d0" },
+              { emoji: "🌍", title: "3 языка", desc: "Сказка на русском, казахском или английском", color: "#ddd6fe" },
+              { emoji: "📥", title: "Скачать всегда", desc: "Сохраните как красивую книгу-PDF и читайте офлайн", color: "#fed7aa" },
+            ].map((item, i) => (
+              <div key={i} className="reveal" style={{ transitionDelay: `${i * 0.08}s` }}>
+                <div style={{
+                  background: "var(--white)",
+                  borderRadius: "20px",
+                  padding: "28px 24px",
+                  textAlign: "center",
+                  boxShadow: "0 4px 20px rgba(59,34,18,0.07)",
+                  height: "100%",
+                }}>
+                  <div style={{
+                    width: "64px", height: "64px",
+                    borderRadius: "50%",
+                    backgroundColor: item.color,
+                    margin: "0 auto 16px",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: "28px",
+                  }}>
+                    {item.emoji}
+                  </div>
+                  <h4 style={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: "17px",
+                    fontWeight: 700,
+                    color: "var(--brown)",
+                    marginBottom: "8px",
+                    borderBottom: "2px solid var(--coral)",
+                    paddingBottom: "8px",
+                  }}>{item.title}</h4>
+                  <p style={{ fontSize: "13px", lineHeight: 1.6, color: "var(--text-muted)" }}>{item.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─────── CALL TO ACTION ─────── */}
+      <section style={{
+        backgroundColor: "var(--brown)",
+        padding: "100px 48px",
+        position: "relative",
+        overflow: "hidden",
+      }}>
+        {/* Decorations */}
+        <div style={{
+          position: "absolute", top: "-60px", left: "-60px",
+          width: "240px", height: "240px", borderRadius: "50%",
+          backgroundColor: "rgba(168,216,74,0.15)",
+        }} />
+        <div style={{
+          position: "absolute", bottom: "-40px", right: "15%",
+          width: "180px", height: "180px", borderRadius: "50%",
+          backgroundColor: "rgba(247,201,72,0.1)",
+        }} />
+
+        <div className="reveal" style={{
+          maxWidth: "680px", margin: "0 auto",
+          textAlign: "center",
+          position: "relative", zIndex: 1,
+        }}>
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: "8px",
+            background: "rgba(255,255,255,0.12)", borderRadius: "999px",
+            padding: "6px 18px", marginBottom: "28px",
+            border: "1px solid rgba(255,255,255,0.2)",
+          }}>
+            <span style={{ color: "var(--yellow)", fontSize: "16px" }}>⭐</span>
+            <span style={{ color: "var(--yellow)", fontSize: "12px", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+              Бесплатно для первой сказки
+            </span>
+          </div>
+          <h2 style={{
+            fontFamily: "var(--font-display)",
+            fontSize: "clamp(38px, 5vw, 64px)",
+            fontWeight: 900,
+            color: "var(--white)",
+            lineHeight: 1.1,
+            marginBottom: "24px",
+          }}>
+            Подарите малышу<br />
+            <span style={{ color: "var(--lime)" }}>храбрость</span> сегодня
+          </h2>
+          <p style={{
+            fontSize: "18px",
+            lineHeight: 1.8,
+            color: "rgba(255,255,255,0.75)",
+            marginBottom: "40px",
+            maxWidth: "520px",
+            margin: "0 auto 40px",
+          }}>
+            MediTale создаёт персональную сказку, в которой ваш ребёнок побеждает страх и становится самым храбрым на свете!
+          </p>
+          <Link href={isLoggedIn ? "/create" : "/auth"} className="btn-coral" style={{ fontSize: "17px", padding: "18px 44px" }}>
+            {isLoggedIn ? "Создать новую сказку" : "Начать бесплатно"}
+            <ArrowRight size={20} />
+          </Link>
+        </div>
+      </section>
+
+      {/* ─────── FOOTER ─────── */}
+      <footer style={{
+        backgroundColor: "#2a1509",
+        padding: "40px 48px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        flexWrap: "wrap",
+        gap: "16px",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <div style={{
+            width: "32px", height: "32px", borderRadius: "8px",
+            background: "linear-gradient(135deg, var(--coral), var(--yellow))",
+            display: "flex", alignItems: "center", justifyContent: "center", fontSize: "16px",
+          }}>📖</div>
+          <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "18px", color: "var(--white)" }}>
+            MediTale
+          </span>
+        </div>
+        <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px" }}>
+          MediTale — Healing stories for children
+        </p>
+        <div style={{ display: "flex", gap: "24px" }}>
+          {["Конфиденциальность", "Условия"].map(link => (
+            <a key={link} href="#" style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px", textDecoration: "none" }}>
+              {link}
+            </a>
+          ))}
+        </div>
+      </footer>
+
+
     </div>
-  );
+  )
 }

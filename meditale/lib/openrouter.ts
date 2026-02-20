@@ -25,5 +25,5 @@ export const MODELS = {
     // Paid alternatives:   
     // story: 'openai/gpt-4o-mini',
     // story: 'anthropic/claude-sonnet-4',
-    // illustration: 'black-forest-labs/flux.2-flex',
+    // illustration: 'bytedance-seed/seedream-4.5',
 } as const

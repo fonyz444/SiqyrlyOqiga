@@ -1,7 +1,28 @@
 @import "tailwindcss";
 
+/* ── Design Tokens ────────────────────────────────────────── */
+:root {
+  --cream: #f5f0e8;
+  --cream-dark: #ede6d8;
+  --brown: #3b2212;
+  --brown-mid: #6b4226;
+  --coral: #d9532e;
+  --coral-light: #f4784e;
+  --lime: #a8d84a;
+  --yellow: #f7c948;
+  --lavender: #b89ff8;
+  --forest: #1d3f2a;
+  --white: #ffffff;
+  --text-body: #2d1f10;
+  --text-muted: #7a5e47;
+  --radius-pill: 999px;
+  --radius-card: 24px;
+  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+}
+
 @theme {
-  --color-background: hsl(0 0% 100%);
+  --color-background: #f5f0e8;
   --color-foreground: hsl(222.2 84% 4.9%);
   --color-card: hsl(0 0% 100%);
   --color-card-foreground: hsl(222.2 84% 4.9%);
@@ -25,60 +46,245 @@
 
 @layer base {
   * {
-    @apply border-border;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--cream);
+    color: var(--text-body);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
   }
 }
 
-/* ─── Custom Utilities ────────────────────────────────────── */
+/* ── Typography ─────────────────────────────────────────── */
 
-.glass {
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(168, 130, 220, 0.18);
+.font-display {
+  font-family: var(--font-display);
 }
 
-.bg-magic-gradient-subtle {
-  background: linear-gradient(135deg, #f5f0ff 0%, #fdf2f8 40%, #fef9f0 70%, #f0f4ff 100%);
+.font-body {
+  font-family: var(--font-body);
 }
 
-.text-gradient-magic {
-  background: linear-gradient(135deg, #7c3aed 0%, #db2777 50%, #f59e0b 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* ── Sticker Badges ─────────────────────────────────────── */
+
+.sticker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1.5px solid var(--brown);
+  border-radius: var(--radius-pill);
+  padding: 5px 16px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--brown);
+  background: transparent;
 }
 
-/* ─── Animations ──────────────────────────────────────────── */
+/* ── Buttons ────────────────────────────────────────────── */
 
-.animate-fade-in-up {
-  animation: fadeInUp 0.5s ease-out both;
+.btn-dark {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--brown);
+  color: var(--white);
+  padding: 14px 32px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  border: none;
 }
 
-.stagger-2 {
+.btn-dark:hover {
+  background: var(--brown-mid);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(59, 34, 18, 0.3);
+}
+
+.btn-coral {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--coral);
+  color: var(--white);
+  padding: 14px 32px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.22s ease;
+}
+
+.btn-coral:hover {
+  background: var(--coral-light);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(217, 83, 46, 0.3);
+}
+
+/* ── Squiggle Text Decoration ───────────────────────────── */
+
+.squiggle {
+  position: relative;
+  display: inline;
+}
+
+.squiggle::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12'%3E%3Cpath d='M0 6 Q25 1 50 6 Q75 11 100 6 Q125 1 150 6 Q175 11 200 6' fill='none' stroke='%23d9532e' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+/* ── Scroll Reveal Animations ────────────────────────────── */
+
+/* Elements waiting to reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition:
+    opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-40px);
+  transition:
+    opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-right {
+  opacity: 0;
+  transform: translateX(40px);
+  transition:
+    opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.92);
+  transition:
+    opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+/* Active state — applied by IntersectionObserver */
+.reveal.is-visible,
+.reveal-left.is-visible,
+.reveal-right.is-visible,
+.reveal-scale.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Stagger delays for children */
+.reveal-stagger>*:nth-child(1) {
+  transition-delay: 0s;
+}
+
+.reveal-stagger>*:nth-child(2) {
+  transition-delay: 0.1s;
+}
+
+.reveal-stagger>*:nth-child(3) {
+  transition-delay: 0.2s;
+}
+
+.reveal-stagger>*:nth-child(4) {
+  transition-delay: 0.3s;
+}
+
+/* Transition delays for individually layered reveals */
+.td-0 {
+  transition-delay: 0s;
+}
+
+.td-100 {
+  transition-delay: 0.1s;
+}
+
+.td-200 {
+  transition-delay: 0.2s;
+}
+
+.td-300 {
+  transition-delay: 0.3s;
+}
+
+.td-400 {
+  transition-delay: 0.4s;
+}
+
+.td-500 {
+  transition-delay: 0.5s;
+}
+
+/* ── Page-load entry animations ─────────────────────────── */
+
+.animate-fade-up {
+  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.delay-100 {
   animation-delay: 0.1s;
 }
+
+.delay-200 {
+  animation-delay: 0.2s;
+}
+
+.delay-300 {
+  animation-delay: 0.3s;
+}
+
+.delay-400 {
+  animation-delay: 0.4s;
+}
+
+.delay-500 {
+  animation-delay: 0.5s;
+}
+
+/* ── Floating decorations ────────────────────────────────── */
 
 .animate-float {
   animation: float 6s ease-in-out infinite;
 }
 
-.animate-float-delayed {
-  animation: float 6s ease-in-out 2s infinite;
+.animate-float-slow {
+  animation: float 9s ease-in-out 3s infinite;
 }
 
-.animate-pulse-glow {
-  animation: pulseGlow 2.5s ease-in-out infinite;
-}
-
-@keyframes fadeInUp {
+@keyframes fadeUp {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(28px);
   }
 
   to {
@@ -91,22 +297,10 @@
 
   0%,
   100% {
-    transform: translateY(0);
+    transform: translateY(0px);
   }
 
   50% {
     transform: translateY(-12px);
-  }
-}
-
-@keyframes pulseGlow {
-
-  0%,
-  100% {
-    box-shadow: 0 0 8px rgba(168, 85, 247, 0.3);
-  }
-
-  50% {
-    box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
   }
 }

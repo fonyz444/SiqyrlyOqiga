@@ -102,8 +102,8 @@ export async function POST(request: NextRequest) {
         }
 
         // 6. Kick off illustration generation asynchronously (fire-and-forget)
-        // Pass character_description so every illustration has consistent hero appearance
-        generateIllustrations(story.id, storyData.chapters, supabase, storyData.character_description).catch(err =>
+        // Pass character_description and child photo so every illustration has consistent hero appearance
+        generateIllustrations(story.id, storyData.chapters, supabase, storyData.character_description, formData.childPhoto, formData.condition).catch(err =>
             console.error('Illustration generation error:', err)
         )
 
@@ -121,14 +121,16 @@ export async function POST(request: NextRequest) {
 
 /**
  * Asynchronously generates illustrations for each chapter using OpenRouter's
- * chat completions API with image modality (not images.generate).
- * Updates the story record in Supabase with illustration URLs.
+ * GPT-5 image mini model. When a child photo is provided, it is included as a
+ * reference image so the hero's face matches the real child.
  */
 async function generateIllustrations(
     storyId: string,
     chapters: any[],
     supabase: any,
-    characterDescription?: string
+    characterDescription?: string,
+    childPhoto?: string,
+    condition?: string
 ) {
     try {
         const updatedChapters = [...chapters]
@@ -138,6 +140,10 @@ async function generateIllustrations(
             ? `MAIN CHARACTER (must appear exactly like this in every image): ${characterDescription}. `
             : ''
 
+        const conditionConstraint = condition
+            ? `CRITICAL MEDICAL CONTEXT: The main character has the following condition: "${condition}". If they use a wheelchair, crutches, or have visible medical equipment, you MUST depict them using it in EVERY illustration. NEVER draw them standing or walking without their equipment if their condition requires it.`
+            : ''
+
         for (let i = 0; i < chapters.length; i++) {
             const chapter = chapters[i]
             if (!chapter.illustration_prompt) continue
@@ -145,12 +151,23 @@ async function generateIllustrations(
             try {
                 console.log(`Generating illustration ${i + 1}/${chapters.length}...`)
 
+                const baseStyle = "Extremely consistent visual style across all images: beautiful modern children's book illustration, high-quality digital painting, soft painterly texture, warm and glowing lighting, expressive sweet characters with large friendly eyes, colorful, highly detailed lush environments, cute, gentle, and deeply comforting mood."
+                const promptText = `Generate a children's book illustration for this scene: "${chapter.illustration_prompt}". \n\nCRITICAL STYLE INSTRUCTIONS: ${baseStyle}\n${conditionConstraint}\n${characterPrefix}\n${childPhoto ? "NOTE: A photo is attached for loose inspiration of the main character's hair color, eye color, and overall vibe. Please design a generic, safe, fictional cartoon character that broadly shares these color traits, but DO NOT attempt to create a photorealistic or exact likeness of the real child." : ""}`
+
+                // Build message content — multimodal if child photo is available
+                const messageContent: any = childPhoto
+                    ? [
+                        { type: 'text', text: promptText },
+                        { type: 'image_url', image_url: { url: childPhoto } }
+                    ]
+                    : promptText
+
                 const response = await getOpenRouterClient().chat.completions.create({
                     model: MODELS.illustration,
                     messages: [
                         {
                             role: 'user',
-                            content: `Create a beautiful, child-friendly cartoon illustration for a children's storybook. ${characterPrefix}Scene: ${chapter.illustration_prompt}. Style: warm, colorful, consistent character design, suitable for a children's picture book.`
+                            content: messageContent
                         }
                     ],
                     // @ts-ignore — OpenRouter-specific parameter for image generation

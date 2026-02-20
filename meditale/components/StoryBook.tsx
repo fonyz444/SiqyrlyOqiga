@@ -39,6 +39,15 @@ export function StoryBook({ story: initialStory }: StoryBookProps) {
     const isOnMedicalNote = currentPage === totalPages
     const currentChapter = (!isOnCover && !isOnMedicalNote) ? story.chapters[currentPage] : null
 
+    let parsedMedicalNote: any = null
+    if (story.medical_note) {
+        try {
+            parsedMedicalNote = JSON.parse(story.medical_note)
+        } catch (e) {
+            // Not a JSON string, leave null to fall back to raw string
+        }
+    }
+
     // Poll for illustration updates
     useEffect(() => {
         const hasAllIllustrations = story.chapters.every(ch => ch.illustration_url)
@@ -215,10 +224,43 @@ export function StoryBook({ story: initialStory }: StoryBookProps) {
                                 Doctor&apos;s Note 🩺
                             </h2>
                             <p className="text-sm text-gray-400 mb-6">For parents and caregivers</p>
-                            <div className="glass rounded-2xl p-8 text-left border border-blue-200/40">
-                                <p className="text-gray-700 leading-relaxed text-[15px]">
-                                    {story.medical_note}
-                                </p>
+                            <div className="glass rounded-2xl p-8 text-left border border-blue-200/40 space-y-6">
+                                {parsedMedicalNote ? (
+                                    <>
+                                        {parsedMedicalNote.what_the_story_teaches && (
+                                            <div>
+                                                <h3 className="text-sm font-bold text-blue-800 uppercase tracking-wider mb-2">What this story teaches</h3>
+                                                <p className="text-gray-700 leading-relaxed text-[15px]">{parsedMedicalNote.what_the_story_teaches}</p>
+                                            </div>
+                                        )}
+                                        {parsedMedicalNote.coping_technique_used && (
+                                            <div>
+                                                <h3 className="text-sm font-bold text-blue-800 uppercase tracking-wider mb-2">Coping Technique Used</h3>
+                                                <p className="text-gray-700 leading-relaxed text-[15px] bg-blue-50 inline-block px-3 py-1 rounded-full text-blue-700 border border-blue-100">{parsedMedicalNote.coping_technique_used}</p>
+                                            </div>
+                                        )}
+                                        {parsedMedicalNote.discussion_questions && parsedMedicalNote.discussion_questions.length > 0 && (
+                                            <div>
+                                                <h3 className="text-sm font-bold text-blue-800 uppercase tracking-wider mb-2">Discussion Questions</h3>
+                                                <ul className="list-disc list-inside text-gray-700 leading-relaxed text-[15px] space-y-1">
+                                                    {parsedMedicalNote.discussion_questions.map((q: string, i: number) => (
+                                                        <li key={i}>{q}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
+                                        {parsedMedicalNote.best_time_to_read && (
+                                            <div>
+                                                <h3 className="text-sm font-bold text-blue-800 uppercase tracking-wider mb-2">Best time to read</h3>
+                                                <p className="text-gray-700 leading-relaxed text-[15px]">{parsedMedicalNote.best_time_to_read}</p>
+                                            </div>
+                                        )}
+                                    </>
+                                ) : (
+                                    <p className="text-gray-700 leading-relaxed text-[15px]">
+                                        {story.medical_note}
+                                    </p>
+                                )}
                             </div>
                             <div className="mt-8 flex gap-3 justify-center flex-wrap">
                                 <Button
